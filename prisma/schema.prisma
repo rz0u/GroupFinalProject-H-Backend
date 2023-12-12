@@ -11,97 +11,108 @@ datasource db {
 }
 
 model User {
-  id                    Int         @id @default(autoincrement())
-  username              String      @unique
-  email                 String      @unique
-  password              String
-  phoneNumber           Int?
-  role                  String      @default("seller")
-  createdAt             DateTime    @default(now())
-  resetPasswordToken    String?
-  orders                Order[]
+  id                 Int      @id @default(autoincrement())
+  username           String   @unique
+  email              String   @unique
+  password           String
+  phoneNumber        Int?
+  role               RoleType @default(seller)
+  createdAt          DateTime @default(now())
+  resetPasswordToken String?
+  orders             Order[]
+  shop               Shop?
+}
+
+enum RoleType {
+  seller
+  admin
 }
 
 model Shop {
-  id                    Int           @id @default(autoincrement())
-  userId                Int
-  user                  User          @relation(fields: [userId], references: [id])  
-  name                  String
-  description           String
-  address               Address
-  phoneNumber           Int
-  products              Product[]
-  orders                Order[]
-  events                Event[]
+  id          Int       @id @default(autoincrement())
+  userId      Int       @unique
+  user        User      @relation(fields: [userId], references: [id])
+  name        String
+  description String
+  address     Address?
+  phoneNumber Int
+  products    Product[]
+  events      Event[]
 }
 
 model Address {
-  id          Int         @id @default(autoincrement())
+  id          Int    @id @default(autoincrement())
   country     String
   city        String
   address1    String
   address2    String
   zipCode     Int
   addressType String
-  userId      Int
-  user        User        @relation(fields: [userId], references: [id])   
+  shopId      Int    @unique
+  shop        Shop   @relation(fields: [shopId], references: [id])
 }
 
 model Product {
-  id                Int         @id @default(autoincrement())
-  title             String
-  description       String
-  img               String
-  categoryId        Int
-  category          Category    @relation(fields: [categoryId], references: [id])
-  price             Int
-  datePosted        DateTime
-  shopId            Int
-  shop              Shop        @relation(fields: [shopId], references: [id])
-  orders            Order[]      
-  gallery           Gallery[]
-  isPublish         Boolean     @default("false")
+  id          Int       @id @default(autoincrement())
+  title       String
+  description String
+  img         String
+  categoryId  Int
+  category    Category  @relation(fields: [categoryId], references: [id])
+  price       Int
+  datePosted  DateTime
+  shopId      Int
+  shop        Shop      @relation(fields: [shopId], references: [id])
+  orders      Order[]
+  gallery     Gallery[]
+  isPublish   Boolean   @default(false)
 }
 
 model Category {
-  id          Int
-  name        String
-  products    Product[]
+  id       Int       @unique
+  name     String
+  products Product[]
 }
 
 model Gallery {
-  id            Int       @id @default(autoincrement())
-  productId     Int
-  product       Product   @relation(fields: [productId], references: [id])
-  img           String
+  id        Int     @id @default(autoincrement())
+  productId Int
+  product   Product @relation(fields: [productId], references: [id])
+  img       String
 }
 
 model Order {
-  id                Int         @id @default(autoincrement())
-  userId            Int
-  user              User        @relation(fields: [userId], references: [id])
-  productId         Int
-  product           Product     @relation(fields: [productId], references: [id])
-  eventId           Int
-  event             Event       @relation(fields: [eventId], references: [id])
-  transactionDate   DateTime
-  amount            Int
-  paymentStatus     String       @default("")
-  token             String       @default("")
-  snapUrl           String       @default("")
-  billCode          String
+  id              Int      @id @default(autoincrement())
+  userId          Int
+  user            User     @relation(fields: [userId], references: [id])
+  productId       Int
+  product         Product  @relation(fields: [productId], references: [id])
+  eventId         Int
+  event           Event    @relation(fields: [eventId], references: [id])
+  transactionDate DateTime
+  amount          Int
+  paymentStatus   String   @default("")
+  token           String   @default("")
+  snapUrl         String   @default("")
+  billCode        String
 }
 
 model Event {
-  id              Int         @id @default(autoincrement())
-  name            String
-  description     String
-  startDate       DateTime
-  finishDate      DateTime
-  status          String      @default("Running")
-  price           Int
-  img             String
-  shopId          Int
-  shop            Shop        @relation(fields: [shopId], references: [id])
-  createdAt       DateTime    @default(now())
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String
+  startDate   DateTime
+  finishDate  DateTime
+  status      Status   @default(Running)
+  price       Int
+  img         String
+  shopId      Int
+  shop        Shop     @relation(fields: [shopId], references: [id])
+  createdAt   DateTime @default(now())
+  order       Order[]
+}
+
+enum Status {
+  Running
+  Closed
 }
