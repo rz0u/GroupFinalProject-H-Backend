@@ -53,19 +53,20 @@ model Address {
 }
 
 model Product {
-  id          Int       @id @default(autoincrement())
-  title       String
-  description String
-  img         String
-  categoryId  Int
-  category    Category  @relation(fields: [categoryId], references: [id])
-  price       Int
-  datePosted  DateTime
-  shopId      Int
-  shop        Shop      @relation(fields: [shopId], references: [id])
-  orders      Order[]
-  gallery     Gallery[]
-  isPublish   Boolean   @default(false)
+  id            Int       @id @default(autoincrement())
+  title         String
+  description   String
+  img           String
+  categoryId    Int
+  category      Category  @relation(fields: [categoryId], references: [id])
+  price         Int
+  datePosted    DateTime
+  shopId        Int
+  shop          Shop      @relation(fields: [shopId], references: [id])
+  orders        Order[]
+  gallery       Gallery[]
+  isPublish     Boolean   @default(false)
+  promotionDate DateTime
 }
 
 model Category {
@@ -98,18 +99,19 @@ model Order {
 }
 
 model Event {
-  id          Int      @id @default(autoincrement())
-  name        String
-  description String
-  startDate   DateTime
-  finishDate  DateTime
-  status      Status   @default(Running)
-  price       Int
-  img         String
-  shopId      Int
-  shop        Shop     @relation(fields: [shopId], references: [id])
-  createdAt   DateTime @default(now())
-  order       Order[]
+  id            Int      @id @default(autoincrement())
+  name          String
+  description   String
+  startDate     DateTime
+  finishDate    DateTime
+  status        Status   @default(Running)
+  price         Int
+  img           String
+  shopId        Int
+  shop          Shop     @relation(fields: [shopId], references: [id])
+  createdAt     DateTime @default(now())
+  order         Order[]
+  promotionDate DateTime
 }
 
 enum Status {
