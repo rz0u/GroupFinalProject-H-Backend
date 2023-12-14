@@ -70,7 +70,7 @@ model Product {
 }
 
 model Category {
-  id       Int       @unique
+  id       Int       @id @default(autoincrement())
   name     String
   products Product[]
 }
