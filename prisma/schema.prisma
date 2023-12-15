@@ -11,33 +11,23 @@ datasource db {
 }
 
 model User {
-  id                 Int      @id @default(autoincrement())
-  username           String   @unique
-  email              String   @unique
+  id                 Int       @id @default(autoincrement())
+  username           String    @unique
+  email              String    @unique
   password           String
   phoneNumber        Int?
-  role               RoleType @default(seller)
-  createdAt          DateTime @default(now())
+  address            Address?
+  role               RoleType  @default(seller)
+  createdAt          DateTime  @default(now())
   resetPasswordToken String?
   orders             Order[]
-  shop               Shop?
+  products           Product[]
+  events             Event[]
 }
 
 enum RoleType {
   seller
   admin
-}
-
-model Shop {
-  id          Int       @id @default(autoincrement())
-  userId      Int       @unique
-  user        User      @relation(fields: [userId], references: [id])
-  name        String
-  description String
-  address     Address?
-  phoneNumber Int
-  products    Product[]
-  events      Event[]
 }
 
 model Address {
@@ -48,8 +38,8 @@ model Address {
   address2    String
   zipCode     Int
   addressType String
-  shopId      Int    @unique
-  shop        Shop   @relation(fields: [shopId], references: [id])
+  userId      Int    @unique
+  user        User   @relation(fields: [userId], references: [id])
 }
 
 model Product {
@@ -61,8 +51,8 @@ model Product {
   category      Category  @relation(fields: [categoryId], references: [id])
   price         Int
   datePosted    DateTime
-  shopId        Int
-  shop          Shop      @relation(fields: [shopId], references: [id])
+  userId        Int
+  user          User      @relation(fields: [userId], references: [id])
   orders        Order[]
   gallery       Gallery[]
   isPublish     Boolean   @default(false)
@@ -107,8 +97,8 @@ model Event {
   status        Status   @default(Running)
   price         Int
   img           String
-  shopId        Int
-  shop          Shop     @relation(fields: [shopId], references: [id])
+  userId        Int
+  user          User     @relation(fields: [userId], references: [id])
   createdAt     DateTime @default(now())
   order         Order[]
   promotionDate DateTime
