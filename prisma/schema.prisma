@@ -10,19 +10,22 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+//user avatar belum
 model User {
   id                 Int       @id @default(autoincrement())
-  username           String    @unique
+  shopName           String    @unique // tambah
   email              String    @unique
   password           String
   phoneNumber        Int?
-  address            Address?
+  address            String //ubah dari model Address
+  zipcode            String // tambah
   role               RoleType  @default(seller)
   createdAt          DateTime  @default(now())
   resetPasswordToken String?
   orders             Order[]
   products           Product[]
   events             Event[]
+  avatar             String
 }
 
 enum RoleType {
@@ -30,17 +33,17 @@ enum RoleType {
   admin
 }
 
-model Address {
-  id          Int    @id @default(autoincrement())
-  country     String
-  city        String
-  address1    String
-  address2    String
-  zipCode     Int
-  addressType String
-  userId      Int    @unique
-  user        User   @relation(fields: [userId], references: [id])
-}
+// model Address {
+//   id          Int    @id @default(autoincrement())
+//   country     String
+//   city        String
+//   address1    String
+//   address2    String
+//   zipCode     Int
+//   addressType String
+//   userId      Int    @unique
+//   user        User   @relation(fields: [userId], references: [id])
+// }
 
 model Product {
   id            Int       @id @default(autoincrement())

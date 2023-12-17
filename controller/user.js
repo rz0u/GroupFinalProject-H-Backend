@@ -6,10 +6,11 @@ const sendToken = require("../utils/jwtToken");
 const upload = require("../utils/multer");
 import * as jwt from "jsonwebtoken";
 
-// Register User //sendmail belum jadi
+// Register User //sendmail belum dicoba
 router.post("/register", upload.single("file"), async (req, res, next) => {
   try {
-    const { username, email, password } = req.body;
+    const { shopName, email, password, address, zipcode, phoneNumber } =
+      req.body;
     const userEmail = await User.get({ email });
 
     if (userEmail) {
@@ -19,19 +20,19 @@ router.post("/register", upload.single("file"), async (req, res, next) => {
     const filename = req.file.filename;
     const fileUrl = path.join(filename);
 
-    const user = {
-      username: username,
+    const activationToken = createActivationToken(user);
+
+    const activationUrl = `https://lokalestari.app/activation/${activationToken}`; //Contoh URL
+
+    const newUser = await User.register({
+      shopName: shopName,
       email: email,
       password: password,
       avatar: fileUrl,
-    };
-
-    console.log(user);
-    const activationToken = createActivationToken(user);
-
-    const activationUrl = `https://tokokamu.app/activation/${activationToken}`; //Contoh URL
-
-    const newUser = await User.register({ username, email, password, avatar });
+      address: address,
+      zipcode: zipcode,
+      phoneNumber: phoneNumber,
+    });
     res.status(201).json({
       success: true,
       newUser,
@@ -77,12 +78,20 @@ router.post(
       if (!newUser) {
         return next(new ErrorHandler("Invalid token", 400));
       }
-      const { username, email, password } = newUser;
-      let user = await User.get({ email });
-      if (user) {
+
+      const existingUser = await User.get({ email });
+      if (existingUser) {
         return next(new ErrorHandler("User already exists", 400));
       }
-      user = await User.register({ username, email, password });
+      const user = await User.register({
+        shopName: newUser.shopName,
+        email: newUser.email,
+        password: newUser.password,
+        avatar: newUser.fileUrl,
+        address: newUser.address,
+        zipcode: newUser.zipcode,
+        phoneNumber: newUser.phoneNumber,
+      });
 
       sendToken(user, 201, res);
     } catch (error) {
@@ -106,7 +115,10 @@ router.post(
         return next(new ErrorHandler("User not found", 400));
       }
 
-      const isPasswordMatched = await User.comparePassword(password);
+      const isPasswordMatched = await User.compare_password(
+        password,
+        user.password
+      );
       if (!isPasswordMatched) {
         return next(new ErrorHandler("Invalid email or password", 400));
       }
@@ -169,7 +181,10 @@ router.put(
         return next(new ErrorHandler("User not found", 400));
       }
 
-      const isPasswordMatched = await User.compare_password(password);
+      const isPasswordMatched = await User.compare_password(
+        password,
+        user.password
+      );
       if (!isPasswordMatched) {
         return next(new ErrorHandler("Invalid email or password", 400));
       }
