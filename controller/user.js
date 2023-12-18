@@ -5,6 +5,7 @@ const ErrorHandler = require("../utils/ErrorHandler");
 const sendToken = require("../utils/jwtToken");
 const upload = require("../utils/multer");
 const isAuthenticated = require("../middleware/auth");
+const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 
 // Register User //sendmail belum dicoba
 router.post("/register", upload.single("file"), async (req, res, next) => {
@@ -276,7 +277,7 @@ router.get(
 router.get(
   "/all-users",
   isAuthenticated,
-  isAdmin("Admin"),
+  isAdmin("admin"),
   catchAsyncErrors(async (req, res, next) => {
     try {
       const users = await User.find({ orderBy: "desc" });
@@ -294,7 +295,7 @@ router.get(
 router.delete(
   "/delete-user/:id",
   isAuthenticated,
-  isAdmin("Admin"),
+  isAdmin("admin"),
   catchAsyncErrors(async (req, res, next) => {
     try {
       const user = await User.get({ id: req.params.id });
