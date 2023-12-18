@@ -4,7 +4,7 @@ const router = require("express").Router();
 const ErrorHandler = require("../utils/ErrorHandler");
 const sendToken = require("../utils/jwtToken");
 const upload = require("../utils/multer");
-import * as jwt from "jsonwebtoken";
+const isAuthenticated = require("../middleware/auth");
 
 // Register User //sendmail belum dicoba
 router.post("/register", upload.single("file"), async (req, res, next) => {
@@ -20,11 +20,7 @@ router.post("/register", upload.single("file"), async (req, res, next) => {
     const filename = req.file.filename;
     const fileUrl = path.join(filename);
 
-    const activationToken = createActivationToken(user);
-
-    const activationUrl = `https://lokalestari.app/activation/${activationToken}`; //Contoh URL
-
-    const newUser = await User.register({
+    const user = {
       shopName: shopName,
       email: email,
       password: password,
@@ -32,21 +28,21 @@ router.post("/register", upload.single("file"), async (req, res, next) => {
       address: address,
       zipcode: zipcode,
       phoneNumber: phoneNumber,
-    });
-    res.status(201).json({
-      success: true,
-      newUser,
-    });
+    };
+
+    const activationToken = createActivationToken(user);
+
+    const activationUrl = `https://lokalestari.app/activation/${activationToken}`; //Contoh URL
 
     try {
       await sendEmail({
-        email: newUser.email,
+        email: user.email,
         subject: "Activate your account",
-        message: `Hello ${newUser.username}, please click on the link to activate your account: ${activationUrl}`,
+        message: `Hello ${user.shopName}, please click on the link to activate your account: ${activationUrl}`,
       });
       res.status(201).json({
         success: true,
-        message: `Email sent to: ${newUser.email}, click on the link to activate your account!`,
+        message: `Email sent to: ${user.email}, click on the link to activate your account!`,
       });
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));
@@ -102,7 +98,7 @@ router.post(
 
 // Login User
 router.post(
-  "/login-user",
+  "/login",
   catchAsyncErrors(async (req, res, next) => {
     try {
       const { email, password } = req.body;
@@ -131,8 +127,8 @@ router.post(
 );
 // Load User
 router.get(
-  "/load-user",
-  //isAuthenticated,
+  "/getuser",
+  isAuthenticated,
   catchAsyncErrors(async (req, res, next) => {
     try {
       const user = await User.get({ id: req.user.id });
@@ -151,27 +147,27 @@ router.get(
   })
 );
 
-// Logout User
-router.get(
-  "/logout",
-  catchAsyncErrors(async (req, res, next) => {
-    try {
-      localStorage.removeItem("token");
+// // Logout User (handle di front-end aja)
+// router.get(
+//   "/logout",
+//   catchAsyncErrors(async (req, res, next) => {
+//     try {
+//       localStorage.removeItem("token");
 
-      res.status(201).json({
-        success: true,
-        message: "Log out successful!",
-      });
-    } catch (error) {
-      return next(new ErrorHandler(error.message, 500));
-    }
-  })
-);
+//       res.status(201).json({
+//         success: true,
+//         message: "Log out successful!",
+//       });
+//     } catch (error) {
+//       return next(new ErrorHandler(error.message, 500));
+//     }
+//   })
+// );
 
 // Update User Info //update apa aja?
 router.put(
   "/update-user",
-  //isAuthenticated,
+  // isAuthenticated,
   catchAsyncErrors(async (req, res, next) => {
     try {
       const { username, email, password } = req.body;

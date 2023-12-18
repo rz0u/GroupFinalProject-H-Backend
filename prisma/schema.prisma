@@ -10,7 +10,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-//user avatar belum
 model User {
   id                 Int       @id @default(autoincrement())
   shopName           String    @unique // tambah

@@ -1,16 +1,12 @@
+const User = require("../models/User");
+
 const sendToken = (user, statusCode, res) => {
-  const token = user.getJwtToken();
+  const token = User.getJwtToken(user);
 
-  const options = {
-    expires: new Date(
-      Date.now() + process.env.COOKIE_EXPIRES_TIME * 24 * 60 * 60 * 1000
-    ), //Set expire time in env
-    httpOnly: true,
-    sameSite: "none",
-    secure: true,
-  };
+  // Set the token in the response headers
+  res.setHeader("Authorization", `Bearer ${token}`);
 
-  res.status(statusCode).cookie("token", token, options).json({
+  res.status(statusCode).json({
     success: true,
     user,
     token,

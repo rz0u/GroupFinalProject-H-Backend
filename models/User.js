@@ -40,6 +40,11 @@ class User {
   static async compare_password(password, hashedPassword) {
     return await bcrypt.compare(password, hashedPassword);
   }
+  static async getJwtToken(user) {
+    return jwt.sign(user, process.env.JWT_SECRET, {
+      expiresIn: process.env.JWT_EXPIRES,
+    });
+  }
 }
 
 module.exports = User;
