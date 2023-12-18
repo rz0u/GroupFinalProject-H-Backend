@@ -167,10 +167,10 @@ router.get(
 // Update User Info //update apa aja?
 router.put(
   "/update-user",
-  // isAuthenticated,
+  isAuthenticated,
   catchAsyncErrors(async (req, res, next) => {
     try {
-      const { username, email, password } = req.body;
+      const { shopName, email, password, phoneNumber } = req.body;
 
       const user = await User.get({ email });
       if (!user) {
@@ -184,6 +184,131 @@ router.put(
       if (!isPasswordMatched) {
         return next(new ErrorHandler("Invalid email or password", 400));
       }
+      await User.update(user.id, { shopName, email, password, phoneNumber });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
+
+// Update User Adress
+router.put(
+  "/update-address",
+  isAuthenticated,
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const { address, zipcode } = req.body;
+
+      const user = await User.get({ id: req.user.id });
+      if (!user) {
+        return next(new ErrorHandler("User not found", 400));
+      }
+
+      await User.update(user.id, { address, zipcode });
+      res.status(201).json({
+        success: true,
+        message: "Address updated successfully!",
+        user,
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
+
+// Update User Password
+router.put(
+  "/update-password",
+  isAuthenticated,
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const { oldPassword, newPassword } = req.body;
+      const user = await User.get({ id: req.user.id });
+      if (!user) {
+        return next(new ErrorHandler("User not found", 400));
+      }
+
+      const isPasswordMatched = await User.compare_password(
+        oldPassword,
+        user.password
+      );
+      if (!isPasswordMatched) {
+        return next(new ErrorHandler("Incorrect old  password", 400));
+      }
+      if (req.body.newPassword !== req.body.confirmPassword) {
+        return next(new ErrorHandler("Password does not match", 400));
+      }
+
+      password = User.make_password(newPassword);
+
+      await User.update(user.id, { password });
+
+      res.status(200).json({
+        success: true,
+        message: "Password updated successfully!",
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
+
+// Find User with ID
+router.get(
+  "/find-user/:id",
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const user = await User.get({ id: req.params.id });
+      if (!user) {
+        return next(new ErrorHandler("User not found", 400));
+      }
+      res.status(200).json({
+        success: true,
+        user,
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
+
+// Find all Users --- For Admin
+router.get(
+  "/all-users",
+  isAuthenticated,
+  isAdmin("Admin"),
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const users = await User.find({ orderBy: "desc" });
+      res.status(200).json({
+        success: true,
+        users,
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
+
+// Delete User --- For Admin
+router.delete(
+  "/delete-user/:id",
+  isAuthenticated,
+  isAdmin("Admin"),
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const user = await User.get({ id: req.params.id });
+
+      if (!user) {
+        return next(new ErrorHandler("User not found", 400));
+      }
+
+      await User.delete(user.id);
+
+      res.status(200).json({
+        success: true,
+        message: "User deleted successfully!",
+      });
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));
     }

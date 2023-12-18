@@ -45,6 +45,13 @@ class User {
       expiresIn: process.env.JWT_EXPIRES,
     });
   }
+  static async find({ orderBy = "desc", filterBy = {} }) {
+    const users = await prisma.user.findMany({
+      where: filterBy,
+      orderBy: { createdAt: orderBy },
+    });
+    return users;
+  }
 }
 
 module.exports = User;
