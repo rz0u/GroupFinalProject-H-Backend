@@ -1,49 +1,85 @@
 const Category = require("../models/category");
+// const router = require("express").Router();
+const ErrorHandler = require("../utils/ErrorHandler");
+// const sendToken = require("../utils/jwtToken");
+// import * as jwt from "jsonwebtoken";
 
-exports.createCategory = async (req, res) => {
-    // if (req.user.role !== "admin") {
-    //   return res.status(403).json({ error: "Unauthorized" });
+const createCategory = async (req, res) => {
+  try {
+    // const { role } = req.user;
+    
+    // if (role !== "admin") {
+    //   return res.status(403).json({ error: 'Unauthorized: Access is denied.' });
     // }
-    const { id, name } = req.body;
-    const category = await Category.create({ id, name });
-  
-    res.status(201).json(category);
-  };
 
-exports.getCategory = async (req, res) => {
-  let query = {};
-//   if (req.user.role === "admin" || req.user.role === "seller") 
-  // {
-  //   query = { id: req.category.id };
-  // }
-  const category = await Category.get(query);
-  res.status(200).json(category);
-};
-
-exports.updateCategory = async (req, res) => {
-  const { id } = req.params;
-  const { name } = req.body;
-  const updatedFields = { name };
-  const category = await Category.get({ id });
-  if (!category) {
-    return res.status(404).json({ error: "Category not found" });
+    const name = req.body.name;
+    console.log("name:", name)
+    const newCategory = await Category.create({ name });
+    res.status(200).json({
+      message: 'Category successfully created',
+      data: newCategory
+    })
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to create category' });
   }
-//   if (req.user.role !== "admin") {
-//     return res.status(403).json({ error: "Unauthorized" });
-//   }
-  const updatedCategory = await Category.update(id, updatedFields);
-  res.status(200).json(updatedCategory);
-};
+}
 
-exports.deleteCategory = async (req, res) => {
-  const { id } = req.params;
-  const category = await Category.get({ id });
-  if (!category) {
-    return res.status(404).json({ error: "Category not found" });
+const getAllCategory = async (req, res) => {
+    try {
+      // const { role } = req.user;
+      
+      // if (role !== "admin") {
+      //   return res.status(403).json({ error: 'Unauthorized: Access is denied.' });
+      // }
+
+      const categoryId = parseInt(req.params.id);
+      const category = await Category.get({ id: categoryId });
+      if (!category) {
+        res.status(404).json({ error: 'Category not found' });
+        return;
+      }
+      res.status(200).json(category);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get category' });
+    }
   }
-//   if (req.user.role !== "admin") {
-//     return res.status(403).json({ error: "Unauthorized" });
-//   }
-  await Category.delete(id);
-  res.status(204).end();
-};
+
+const editCategory = async (req, res) => {
+    try {
+      // const { role } = req.user;
+      
+      // if (role !== "admin") {
+      //   return res.status(403).json({ error: 'Unauthorized: Access is denied.' });
+      // }
+
+      const categoryId = parseInt(req.params.id);
+      const dataToUpdate = req.body;
+      const editCategory = await Category.update(categoryId, dataToUpdate);
+      res.status(200).json(editCategory);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to update category' });
+    }
+  }
+
+const deleteCategory = async (req, res) => {
+    try {
+      // const { role } = req.user;
+      
+      // if (role !== "admin") {
+      //   return res.status(403).json({ error: 'Unauthorized: Access is denied.' });
+      // }
+
+      const categoryId = parseInt(req.params.id);
+      await Category.delete(categoryId);
+      res.status(204).send(); // No content after successful deletion
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to delete category' });
+    }
+  }
+
+  module.exports = {
+    getAllCategory,
+    createCategory,
+    editCategory,
+    deleteCategory
+  }

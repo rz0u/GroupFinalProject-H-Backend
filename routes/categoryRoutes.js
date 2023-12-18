@@ -1,28 +1,19 @@
-const categoryController = require("../controller/categoryController");
-//const permission = require("../permission");
 const { Router } = require("express");
-const categoryRouter = Router()
+const {
+    getAllCategory,
+    createCategory,
+    editCategory,
+    deleteCategory,
+} = require("../controller/categoryController");
+// const { authenticateUser } = require("../middleware/error");
 
+// Assuming the authenticateUser middleware extracts user information and attaches it to req.user
 
-categoryRouter.post(
-  "/categories",
-//   permission.is_authenticated,
-  categoryController.createCategory
-);
-categoryRouter.get(
-  "/categories", 
-//   permission.is_authenticated, 
-  categoryController.getCategory
-);
-categoryRouter.patch(
-  "/categories/:id",
-//   permission.is_authenticated,
-  categoryController.updateCategory
-);
-categoryRouter.delete(
-  "/categories/:id",
-//   permission.is_authenticated,
-  categoryController.deleteCategory
-);
+const categoryRouter = Router();
+
+categoryRouter.post("/", createCategory);
+categoryRouter.get("/", getAllCategory);
+categoryRouter.put("/:id", editCategory);
+categoryRouter.delete("/:id", deleteCategory);
 
 module.exports = categoryRouter;
