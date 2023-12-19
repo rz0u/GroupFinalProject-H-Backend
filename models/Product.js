@@ -5,31 +5,54 @@ const prisma = new PrismaClient();
 
 class Product {
   // create
-  static async create(data) {
-    return await prisma.user.create({ data: data });
-    // gallery: {
-    //   create: [
-    //     //contoh buat product
-    //     {
-    //       img: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-    //     },
-    //     {
-    //       img: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-    //     },
-    //   ],
-    // },
+  static async create({
+    title,
+    description,
+    img,
+    categoryId,
+    price,
+    gallery,
+    userId,
+  }) {
+    return await prisma.product.create({
+      data: {
+        title,
+        description,
+        img,
+        categoryId,
+        price,
+        gallery,
+        userId,
+      },
+    });
   }
   // get
   static async get(fieldValuePair, options) {
-    return await prisma.user.findUnique({ where: fieldValuePair, ...options });
+    return await prisma.product.findUnique({
+      where: fieldValuePair,
+      ...options,
+    });
   }
   // get all
   static async getAll(options) {
-    return await prisma.user.findMany(options);
+    const defaultOptions = {
+      where: {
+        isPublish: true,
+      },
+      orderBy: {
+        _orderBy: () => "random()",
+      },
+      ...options,
+    };
+    return await prisma.product.findMany(defaultOptions);
+  }
+  // get all admin
+  static async adminGetAll(options) {
+    return await prisma.product.findMany(options);
   }
   // delete
   static async delete(id) {
-    return await prisma.user.delete({ where: { id: id } });
+    return await prisma.product.delete({ where: { id: id } });
   }
 }
 

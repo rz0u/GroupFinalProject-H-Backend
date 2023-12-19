@@ -1,118 +1,113 @@
-const Product = require("../models/Product");
-const path = require("path");
-const router = require("express").Router();
 const ErrorHandler = require("../utils/ErrorHandler");
-const sendToken = require("../utils/jwtToken");
-const upload = require("../utils/multer");
 const isAuthenticated = require("../middleware/auth");
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
+const Product = require("../models/Product");
 const User = require("../models/User");
 
-// Create Product //belum euy lieur anying
-router.post(
-  "/create-product",
-  catchAsyncErrors(async (req, res, next) => {
-    try {
-      const userId = req.body.userId;
-      const gallery = req.body.gallery;
-      const shopName = await User.get({ id: userId });
-      if (!shopName) {
-        return next(new ErrorHandler("User not found", 404));
-      } else {
-        const productData = req.body;
-        productData.img = imageUrls;
-        productData.userId = userId;
+// Create Product // butuh input dari yg lain
+const createProduct = catchAsyncErrors(async (req, res, next) => {
+  try {
+    const { title, description, img, categoryId, price, gallery } = req.body;
+    const user = req.user.id;
+    console.log("---------userId:", user);
 
-        productData.gallery = gallery;
-
-        const product = await Product.create(productData);
-
-        res.status(201).json({
-          success: true,
-          product,
-        });
-      }
-    } catch (error) {
-      return next(new ErrorHandler(error.message, 500));
+    let arr = [];
+    for (const item in gallery) {
+      arr.push({ img: gallery[item].img });
     }
-  })
-);
 
-// Get All Products //user model belum
-router.get(
-  "/get-all-products/:id",
-  catchAsyncErrors(async (req, res, next) => {
-    try {
-      const products = await Product.get({ userId: req.params.id });
+    const loadGallery = {
+      create: arr,
+    };
 
-      res.status(200).json({
-        success: true,
-        products,
-      });
-    } catch (error) {
-      return next(new ErrorHandler(error.message, 500));
+    console.log("body gallery: ", loadGallery);
+
+    const newProduct = await Product.create({
+      title,
+      description,
+      img,
+      categoryId,
+      price,
+      gallery: loadGallery,
+      userId: user,
+    });
+
+    res.status(201).json({
+      success: true,
+      newProduct,
+    });
+  } catch (error) {
+    return next(new ErrorHandler(error.message, 500));
+  }
+});
+
+// Get All Products from Seller
+const getAllSellerProducts = catchAsyncErrors(async (req, res, next) => {
+  try {
+    const products = await Product.get({ userId: req.params.id });
+
+    res.status(200).json({
+      success: true,
+      products,
+    });
+  } catch (error) {
+    return next(new ErrorHandler(error.message, 500));
+  }
+});
+
+// Delete Product //tambahin isSeller/auth
+const deleteProduct = catchAsyncErrors(async (req, res, next) => {
+  try {
+    const productId = parseInt(req.params.id);
+    const product = await Product.get({ id: productId });
+
+    if (!product) {
+      return next(new ErrorHandler("Product not found", 404));
     }
-  })
-);
 
-// Delete Product //user model belum
-router.delete(
-  "/delete-product/:id",
-  isSeller,
-  catchAsyncErrors(async (req, res, next) => {
-    try {
-      const product = await Product.get({ id: req.params.id });
+    await Product.delete(product.id);
 
-      if (!product) {
-        return next(new ErrorHandler("Product not found", 404));
-      }
+    res.status(200).json({
+      success: true,
+      message: "Product deleted successfully",
+    });
+  } catch (error) {
+    return next(new ErrorHandler(error.message, 500));
+  }
+});
 
-      await Product.delete(product.id);
+// Get All Products  //tambahin kalau belum di acc sama admin gakeliatan(atau ada tanda unpublished)
+const getAllProducts = catchAsyncErrors(async (req, res, next) => {
+  try {
+    const products = await Product.getAll();
 
-      res.status(200).json({
-        success: true,
-        message: "Product deleted successfully",
-      });
-    } catch (error) {
-      return next(new ErrorHandler(error.message, 500));
-    }
-  })
-);
+    res.status(200).json({
+      success: true,
+      products,
+    });
+  } catch (error) {
+    return next(new ErrorHandler(error.message, 500));
+  }
+});
 
-// Get All Products //user model belum //tambahin kalau belum di acc sama admin gakeliatan(atau ada tanda unpublished)
-router.get(
-  "/get-all-products",
-  catchAsyncErrors(async (req, res, next) => {
-    try {
-      const products = await Product.getAll();
+// All Product --- For Admin // tambahin isAdmin & isAuth
+const adminGetAll = catchAsyncErrors(async (req, res, next) => {
+  try {
+    const products = await Product.adminGetAll();
 
-      res.status(200).json({
-        success: true,
-        products,
-      });
-    } catch (error) {
-      return next(new ErrorHandler(error.message, 500));
-    }
-  })
-);
+    res.status(200).json({
+      success: true,
+      products,
+    });
+  } catch (error) {
+    return next(new ErrorHandler(error.message, 500));
+  }
+});
 
-// All Product --- For Admin // tambahin is flagged atau is published
-router.get(
-  "/all-products-admin",
-  isAuthenticated,
-  isAdmin("admin"),
-  catchAsyncErrors(async (req, res, next) => {
-    try {
-      const products = await Product.getAll();
-
-      res.status(200).json({
-        success: true,
-        products,
-      });
-    } catch (error) {
-      return next(new ErrorHandler(error.message, 500));
-    }
-  })
-);
-
-module.exports = router;
+module.exports = {
+  createProduct,
+  getAllSellerProducts,
+  deleteProduct,
+  getAllProducts,
+  adminGetAll,
+};
