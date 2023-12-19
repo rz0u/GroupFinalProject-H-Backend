@@ -44,7 +44,8 @@ const createProduct = catchAsyncErrors(async (req, res, next) => {
 const getAllSellerProducts = catchAsyncErrors(async (req, res, next) => {
   try {
     const userId = parseInt(req.params.id);
-    const products = await Product.get({ userId: userId });
+    console.log("---------------------userId", userId);
+    const products = await Product.getUserId(userId);
 
     res.status(200).json({
       success: true,

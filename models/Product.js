@@ -54,6 +54,15 @@ class Product {
   static async delete(id) {
     return await prisma.product.delete({ where: { id: id } });
   }
+  // getUserId
+  static async getUserId(id) {
+    return await prisma.product.findMany({
+      where: { userId: id },
+      include: {
+        gallery: true,
+      },
+    });
+  }
 }
 
 module.exports = Product;

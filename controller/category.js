@@ -1,9 +1,4 @@
-const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const Category = require("../models/Category");
-// const router = require("express").Router();
-const ErrorHandler = require("../utils/ErrorHandler");
-// const sendToken = require("../utils/jwtToken");
-// import * as jwt from "jsonwebtoken";
 
 const createCategory = async (req, res) => {
   try {
