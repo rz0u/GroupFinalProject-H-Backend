@@ -1,0 +1,7 @@
+const handleUpload = (req, res) => {
+  let finalImageURL =
+    req.protocol + "://" + req.get("host") + "/uploads" + req.file.filename;
+  res.json({ status: "success", image: finalImageURL });
+};
+
+module.exports = { handleUpload };

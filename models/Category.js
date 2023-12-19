@@ -12,7 +12,19 @@ class Category {
       ...options,
     });
   }
+  static async getAll(options) {
+    const defaultOptions = {
+      where: {
+        isPublish: true,
+      },
+      orderBy: {
+        random: true,
+      },
+      ...options,
+    };
 
+    return await prisma.category.findMany(defaultOptions);
+  }
   static async update(id, updatedFields) {
     return await prisma.category.update({ where: { id }, data: updatedFields });
   }

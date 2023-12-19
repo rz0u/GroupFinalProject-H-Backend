@@ -10,7 +10,6 @@ const createProduct = catchAsyncErrors(async (req, res, next) => {
     const { title, description, img, categoryId, price, gallery } = req.body;
     const user = req.user.id;
     console.log("---------userId:", user);
-
     let arr = [];
     for (const item in gallery) {
       arr.push({ img: gallery[item].img });
@@ -44,7 +43,8 @@ const createProduct = catchAsyncErrors(async (req, res, next) => {
 // Get All Products from Seller
 const getAllSellerProducts = catchAsyncErrors(async (req, res, next) => {
   try {
-    const products = await Product.get({ userId: req.params.id });
+    const userId = parseInt(req.params.id);
+    const products = await Product.get({ userId: userId });
 
     res.status(200).json({
       success: true,

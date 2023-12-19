@@ -1,3 +1,4 @@
+const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const Category = require("../models/Category");
 // const router = require("express").Router();
 const ErrorHandler = require("../utils/ErrorHandler");
@@ -6,12 +7,6 @@ const ErrorHandler = require("../utils/ErrorHandler");
 
 const createCategory = async (req, res) => {
   try {
-    // const { role } = req.user;
-
-    // if (role !== "admin") {
-    //   return res.status(403).json({ error: 'Unauthorized: Access is denied.' });
-    // }
-
     const name = req.body.name;
     console.log("name:", name);
     const newCategory = await Category.create({ name });
@@ -24,14 +19,8 @@ const createCategory = async (req, res) => {
   }
 };
 
-const getAllCategory = async (req, res) => {
+const getCategoryId = async (req, res) => {
   try {
-    // const { role } = req.user;
-
-    // if (role !== "admin") {
-    //   return res.status(403).json({ error: 'Unauthorized: Access is denied.' });
-    // }
-
     const categoryId = parseInt(req.params.id);
     const category = await Category.get({ id: categoryId });
     if (!category) {
@@ -44,14 +33,21 @@ const getAllCategory = async (req, res) => {
   }
 };
 
+const getAllCategory = async (req, res) => {
+  try {
+    const categories = await Category.getAll();
+
+    res.status(200).json({
+      success: true,
+      categories,
+    });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to get category" });
+  }
+};
+
 const editCategory = async (req, res) => {
   try {
-    // const { role } = req.user;
-
-    // if (role !== "admin") {
-    //   return res.status(403).json({ error: 'Unauthorized: Access is denied.' });
-    // }
-
     const categoryId = parseInt(req.params.id);
     const dataToUpdate = req.body;
     const editCategory = await Category.update(categoryId, dataToUpdate);
@@ -63,12 +59,6 @@ const editCategory = async (req, res) => {
 
 const deleteCategory = async (req, res) => {
   try {
-    // const { role } = req.user;
-
-    // if (role !== "admin") {
-    //   return res.status(403).json({ error: 'Unauthorized: Access is denied.' });
-    // }
-
     const categoryId = parseInt(req.params.id);
     await Category.delete(categoryId);
     res.status(204).send(); // No content after successful deletion
@@ -79,6 +69,7 @@ const deleteCategory = async (req, res) => {
 
 module.exports = {
   getAllCategory,
+  getCategoryId,
   createCategory,
   editCategory,
   deleteCategory,
