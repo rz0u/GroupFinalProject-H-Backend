@@ -36,6 +36,7 @@ const getCategoryId = async (req, res) => {
 const getAllCategory = async (req, res) => {
   try {
     const categories = await Category.getAll();
+    console.log(categories);
 
     res.status(200).json({
       success: true,

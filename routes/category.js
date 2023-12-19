@@ -8,10 +8,10 @@ const {
   getCategoryId,
 } = require("../controller/category");
 
-categoryRouter.post("/", createCategory);
-categoryRouter.get("/:id", getCategoryId);
-categoryRouter.get("/", getAllCategory);
-categoryRouter.put("/:id", editCategory);
-categoryRouter.delete("/:id", deleteCategory);
+categoryRouter.post("/", createCategory); //works
+categoryRouter.get("/:id", getCategoryId); //works
+categoryRouter.get("/", getAllCategory); //
+categoryRouter.put("/:id", editCategory); //works
+categoryRouter.delete("/:id", deleteCategory); //works
 
 module.exports = categoryRouter;
