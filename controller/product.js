@@ -8,23 +8,22 @@ const isAuthenticated = require("../middleware/auth");
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const User = require("../models/User");
 
-// Create Product //belum euy lieur
+// Create Product //belum euy lieur anying
 router.post(
   "/create-product",
-  upload.array("images"),
   catchAsyncErrors(async (req, res, next) => {
     try {
       const userId = req.body.userId;
-
+      const gallery = req.body.gallery;
       const shopName = await User.get({ id: userId });
       if (!shopName) {
         return next(new ErrorHandler("User not found", 404));
       } else {
-        const files = req.files;
-        const imageUrls = files.map((file) => `${file.fileName}`);
         const productData = req.body;
-        productData.images = imageUrls;
+        productData.img = imageUrls;
         productData.userId = userId;
+
+        productData.gallery = gallery;
 
         const product = await Product.create(productData);
 

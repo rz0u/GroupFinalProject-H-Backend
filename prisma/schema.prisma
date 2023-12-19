@@ -15,7 +15,7 @@ model User {
   shopName           String    @unique // tambah
   email              String    @unique
   password           String
-  phoneNumber        Int?
+  phoneNumber        String?
   address            String //ubah dari model Address
   zipcode            String // tambah
   role               RoleType  @default(seller)
@@ -31,18 +31,6 @@ enum RoleType {
   seller
   admin
 }
-
-// model Address {
-//   id          Int    @id @default(autoincrement())
-//   country     String
-//   city        String
-//   address1    String
-//   address2    String
-//   zipCode     Int
-//   addressType String
-//   userId      Int    @unique
-//   user        User   @relation(fields: [userId], references: [id])
-// }
 
 model Product {
   id            Int       @id @default(autoincrement())
