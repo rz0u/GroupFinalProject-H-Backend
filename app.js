@@ -3,8 +3,11 @@ const dotenv = require("dotenv");
 const bodyParser = require("body-parser");
 const multer = require("multer");
 const path = require("path");
-// const router = require("./routes");
-const categoryRoutes = require("./routes/categoryRoutes");
+const userRouter = require("./routes/user")
+// const categoryRoutes = require("./routes/category");
+const eventRoutes = require("./routes/eventRoutes");
+const categoryRouter = require("./routes/category");
+const eventRouter = require("./routes/eventRoutes");
 
 
 dotenv.config();
@@ -34,8 +37,11 @@ const storage = multer.diskStorage({
 const upload = multer({storage});
 
 app.use(express.json());
-// app.use(router);
-app.use("/api/v1/categories", categoryRoutes);
+app.use("/api/v1/category", categoryRouter);
+app.use("/api/v1/event", eventRoutes);
+app.use("/api/v1/user", userRouter);
+app.use("/api/v1/event", eventRouter);
+
 
 
 app.get("/", (req, res) => {
@@ -46,7 +52,7 @@ app.post("/api/upload", upload.single("photo"),(req,res)=> {
   // membuat url gambar
   // save ke db
   let finalImageURL = 
-    req.protocol + "://" +  req.get("host") + "/uploads" + req.file.filename;
+    req.protocol + "://" +  req.get("host") + "/uploads/" + req.file.filename;
   res.json({ status: "success", image: finalImageURL });
 });
 

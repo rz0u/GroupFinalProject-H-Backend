@@ -11,16 +11,20 @@ datasource db {
 }
 
 model User {
-  id                 Int      @id @default(autoincrement())
-  username           String   @unique
-  email              String   @unique
+  id                 Int       @id @default(autoincrement())
+  shopName           String    @unique
+  email              String    @unique
   password           String
-  phoneNumber        Int?
-  role               RoleType @default(seller)
-  createdAt          DateTime @default(now())
+  phoneNumber        String?
+  address            String
+  zipcode            String
+  role               RoleType  @default(seller)
+  createdAt          DateTime  @default(now())
   resetPasswordToken String?
   orders             Order[]
-  shop               Shop?
+  products           Product[]
+  events             Event[]
+  avatar             String
 }
 
 enum RoleType {
@@ -28,45 +32,22 @@ enum RoleType {
   admin
 }
 
-model Shop {
-  id          Int       @id @default(autoincrement())
-  userId      Int       @unique
-  user        User      @relation(fields: [userId], references: [id])
-  name        String
-  description String
-  address     Address?
-  phoneNumber Int
-  products    Product[]
-  events      Event[]
-}
-
-model Address {
-  id          Int    @id @default(autoincrement())
-  country     String
-  city        String
-  address1    String
-  address2    String
-  zipCode     Int
-  addressType String
-  shopId      Int    @unique
-  shop        Shop   @relation(fields: [shopId], references: [id])
-}
-
 model Product {
   id            Int       @id @default(autoincrement())
   title         String
   description   String
   img           String
-  categoryId    Int
-  category      Category  @relation(fields: [categoryId], references: [id])
   price         Int
-  datePosted    DateTime
-  shopId        Int
-  shop          Shop      @relation(fields: [shopId], references: [id])
-  orders        Order[]
+  datePosted    DateTime  @default(now())
   gallery       Gallery[]
+  orders        Order[]
   isPublish     Boolean   @default(false)
-  promotionDate DateTime
+  promotionDate DateTime?
+
+  userId     Int
+  user       User     @relation(fields: [userId], references: [id])
+  categoryId Int
+  category   Category @relation(fields: [categoryId], references: [id])
 }
 
 model Category {
@@ -107,8 +88,8 @@ model Event {
   status        Status   @default(Running)
   price         Int
   img           String
-  shopId        Int
-  shop          Shop     @relation(fields: [shopId], references: [id])
+  userId        Int
+  user          User     @relation(fields: [userId], references: [id])
   createdAt     DateTime @default(now())
   order         Order[]
   promotionDate DateTime
