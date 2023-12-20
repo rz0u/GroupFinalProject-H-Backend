@@ -28,7 +28,7 @@ const registerUser = async (req, res, next) => {
 
     const activationToken = User.createActivationToken(user);
 
-    const activationUrl = `${process.env.BASE_URL}/api/v1/user/activation/${activationToken}`; //Contoh URL
+    const activationUrl = `${process.env.BASE_URL}/activation/${activationToken}`; //Contoh URL
 
     try {
       await sendMail({
@@ -48,7 +48,7 @@ const registerUser = async (req, res, next) => {
   }
 };
 
-// // Activate User
+// // Activate User // Nanti ubah jadi req.Params dan tambah /:token & ubah jadi .get
 const activateUser = catchAsyncErrors(async (req, res, next) => {
   try {
     const { activation_token } = req.body;
@@ -91,6 +91,11 @@ const loginUser = catchAsyncErrors(async (req, res, next) => {
     const user = await User.get({ email });
     if (!user) {
       return next(new ErrorHandler("User not found", 400));
+    }
+    if (!user.isActivated) {
+      return next(
+        new ErrorHandler("User is not activated, please check your email", 400)
+      );
     }
 
     const isPasswordMatched = await User.compare_password(

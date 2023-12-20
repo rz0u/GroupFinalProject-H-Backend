@@ -25,6 +25,8 @@ model User {
   products           Product[]
   events             Event[]
   avatar             String
+  isActivated        Boolean   @default(false)
+  activationToken    String
 }
 
 enum RoleType {
