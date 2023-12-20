@@ -6,6 +6,7 @@ const productRouter = require("./routes/product");
 const categoryRouter = require("./routes/category");
 const uploadRouter = require("./routes/upload");
 const Cors = require("cors");
+const eventRouter = require("./routes/eventRoutes");
 
 dotenv.config();
 const app = express();
@@ -23,6 +24,14 @@ app.use("/api/v1/upload", uploadRouter);
 
 app.get("/", (req, res) => {
   res.send("Hello, Test!");
+});
+
+app.post("/api/upload", upload.single("photo"),(req,res)=> {
+  // membuat url gambar
+  // save ke db
+  let finalImageURL = 
+    req.protocol + "://" +  req.get("host") + "/uploads/" + req.file.filename;
+  res.json({ status: "success", image: finalImageURL });
 });
 
 app.listen(port, () => {
