@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Product" ALTER COLUMN "datePosted" SET DEFAULT CURRENT_TIMESTAMP,
+ALTER COLUMN "promotionDate" DROP NOT NULL;
