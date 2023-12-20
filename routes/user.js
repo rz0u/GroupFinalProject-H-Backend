@@ -13,10 +13,12 @@ const {
   updateUser,
 } = require("../controller/user");
 const { isAuthenticated, isAdmin } = require("../middleware/auth");
+const { loginLimiter } = require("../utils/rateLimiter");
+const { validator, validateInput } = require("../utils/validation");
 
-userRouter.post("/register", registerUser);
+userRouter.post("/register", validator, validateInput, registerUser);
 userRouter.post("/activation", activateUser);
-userRouter.post("/login", loginUser);
+userRouter.post("/login", loginLimiter, loginUser);
 userRouter.get("/getuser", loadUser);
 userRouter.put("/update-user", isAuthenticated, updateUser);
 userRouter.put("/update-address", isAuthenticated, updateUserAddress);

@@ -1,48 +1,26 @@
 const express = require("express");
 const dotenv = require("dotenv");
-const bodyParser = require("body-parser");
-const multer = require("multer");
 const path = require("path");
-const userRouter = require("./routes/user")
-// const categoryRoutes = require("./routes/category");
-const eventRoutes = require("./routes/eventRoutes");
+const userRouter = require("./routes/user");
+const productRouter = require("./routes/product");
 const categoryRouter = require("./routes/category");
+const uploadRouter = require("./routes/upload");
+const Cors = require("cors");
 const eventRouter = require("./routes/eventRoutes");
-
 
 dotenv.config();
 const app = express();
 const port = process.env.PORT;
 
-
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true}));
-app.use(express.static(path.join(__dirname, "uploads")));
-
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, path.join(__dirname, "/uploads/"));
-  },
-  filename: function (req, file, cb) {
-    cb(
-      null,
-      path.parse(file.originalname).name +
-        "-" +
-        Date.now() +
-        path.extname(file.originalname)
-    );
-  }
-})
-
-const upload = multer({storage});
+app.use(Cors());
 
 app.use(express.json());
-app.use("/api/v1/category", categoryRouter);
-app.use("/api/v1/event", eventRoutes);
+app.use(express.static(path.join(__dirname, "uploads")));
+
 app.use("/api/v1/user", userRouter);
-app.use("/api/v1/event", eventRouter);
-
-
+app.use("/api/v1/product", productRouter);
+app.use("/api/v1/category", categoryRouter);
+app.use("/api/v1/upload", uploadRouter);
 
 app.get("/", (req, res) => {
   res.send("Hello, Test!");
