@@ -230,9 +230,13 @@ const findUserId = catchAsyncErrors(async (req, res, next) => {
 const findAllUsers = catchAsyncErrors(async (req, res, next) => {
   try {
     const users = await User.find({ orderBy: "desc" });
+    const usersResponse = users.map((user) => {
+      const { password, resetPasswordToken, ...userResponse } = user;
+      return userResponse;
+    });
     res.status(200).json({
       success: true,
-      users,
+      usersResponse,
     });
   } catch (error) {
     return next(new ErrorHandler(error.message, 500));
@@ -259,29 +263,6 @@ const deleteUser = catchAsyncErrors(async (req, res, next) => {
     return next(new ErrorHandler(error.message, 500));
   }
 });
-// router.delete(
-//   "/delete-user/:id",
-//   isAuthenticated,
-//   isAdmin("admin"),
-//   catchAsyncErrors(async (req, res, next) => {
-//     try {
-//       const user = await User.get({ id: req.params.id });
-
-//       if (!user) {
-//         return next(new ErrorHandler("User not found", 400));
-//       }
-
-//       await User.delete(user.id);
-
-//       res.status(200).json({
-//         success: true,
-//         message: "User deleted successfully!",
-//       });
-//     } catch (error) {
-//       return next(new ErrorHandler(error.message, 500));
-//     }
-//   })
-// );
 
 module.exports = {
   registerUser,

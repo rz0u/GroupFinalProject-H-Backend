@@ -2,16 +2,20 @@ const { Router } = require("express");
 const eventRouter = Router();
 const {
   createEvent,
-  getEvent,
+  getEventId,
+  getAllEvent,
   updateEvent,
   deleteEvent,
+  // sellerDelete,
 } = require("../controller/eventController");
-// const { isAuthenticated } = require("../middleware/auth");
+const { isAuthenticated, isAdmin } = require("../middleware/auth");
 
-// eventRouter.get("/", isAuthenticated, getEvent);
-eventRouter.post('/', createEvent)
-// eventRouter.put('/:id', isAuthenticated, updateEvent)
-// eventRouter.delete('/:id', isAuthenticated, deleteEvent)
+eventRouter.post('/', isAuthenticated, createEvent);
+eventRouter.get("/:id", isAuthenticated, getEventId);
+eventRouter.get("/", isAuthenticated, getAllEvent);
+eventRouter.put('/:id', isAuthenticated, updateEvent);
+eventRouter.delete('/:id', isAuthenticated, isAdmin ("admin"), deleteEvent);
+// eventRouter.delete('/seller-delete/:id', isAuthenticated, sellerDelete);
 
 module.exports = eventRouter;
 
