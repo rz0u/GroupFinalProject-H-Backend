@@ -39,9 +39,6 @@ class Product {
       where: {
         isPublish: true,
       },
-      orderBy: {
-        _orderBy: () => "random()",
-      },
       ...options,
     };
     return await prisma.product.findMany(defaultOptions);
@@ -52,6 +49,7 @@ class Product {
   }
   // delete
   static async delete(id) {
+    await prisma.gallery.deleteMany({ where: { productId: id } });
     return await prisma.product.delete({ where: { id: id } });
   }
   // getUserId
@@ -62,6 +60,49 @@ class Product {
         gallery: true,
       },
     });
+  }
+  // update publish
+  static async publish(id, isPublish) {
+    return await prisma.product.update({
+      where: { id: id },
+      data: {
+        isPublish: isPublish,
+      },
+    });
+  }
+  // add promotion date
+  static async promote(productId) {
+    const promotionWeek = new Date();
+    promotionWeek.setDate(promotionWeek.getDate() + 7);
+    return await prisma.product.update({
+      where: { id: productId },
+      data: {
+        promotionDate: promotionWeek,
+      },
+    });
+  }
+  // get image from gallery
+  static async getImage(id) {
+    return await prisma.gallery.findUnique({ where: { id: id } });
+  }
+  // delete image from gallery
+  static async deleteImage(id) {
+    return await prisma.gallery.delete({ where: { id: id } });
+  }
+  // get promoted products
+  static async getPromote(options) {
+    const currentDate = new Date();
+
+    const defaultOptions = {
+      where: {
+        isPublish: true,
+        promotionDate: {
+          gt: currentDate,
+        },
+      },
+      ...options,
+    };
+    return await prisma.product.findMany(defaultOptions);
   }
 }
 

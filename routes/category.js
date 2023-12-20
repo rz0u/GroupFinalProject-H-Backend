@@ -7,11 +7,17 @@ const {
   deleteCategory,
   getCategoryId,
 } = require("../controller/category");
+const { isAuthenticated, isAdmin } = require("../middleware/auth");
 
-categoryRouter.post("/", createCategory); //works
-categoryRouter.get("/:id", getCategoryId); //works
-categoryRouter.get("/", getAllCategory); //
-categoryRouter.put("/:id", editCategory); //works
-categoryRouter.delete("/:id", deleteCategory); //works
+categoryRouter.post("/", isAuthenticated, isAdmin("admin"), createCategory);
+categoryRouter.get("/:id", getCategoryId);
+categoryRouter.get("/", getAllCategory);
+categoryRouter.put("/:id", isAuthenticated, isAdmin("admin"), editCategory);
+categoryRouter.delete(
+  "/:id",
+  isAuthenticated,
+  isAdmin("admin"),
+  deleteCategory
+);
 
 module.exports = categoryRouter;
