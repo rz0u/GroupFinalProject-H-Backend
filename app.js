@@ -5,10 +5,13 @@ const userRouter = require("./routes/user");
 const productRouter = require("./routes/product");
 const categoryRouter = require("./routes/category");
 const uploadRouter = require("./routes/upload");
+const Cors = require("cors");
 
 dotenv.config();
 const app = express();
 const port = process.env.PORT;
+
+app.use(Cors());
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "uploads")));
