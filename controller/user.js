@@ -5,7 +5,7 @@ const sendMail = require("../utils/sendMail");
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const jwt = require("jsonwebtoken");
 
-// // Register User //sendmail belum dicoba
+// Register User //sendmail belum dicoba
 const registerUser = async (req, res, next) => {
   try {
     const { shopName, email, password, address, zipcode, phoneNumber, avatar } =
@@ -54,7 +54,7 @@ const registerUser = async (req, res, next) => {
   }
 };
 
-// // Activate User // Nanti ubah jadi req.Params dan tambah /:token & ubah jadi .get
+// Activate User // Nanti ubah jadi req.Params dan tambah /:token & ubah jadi .get
 const activateUser = catchAsyncErrors(async (req, res, next) => {
   try {
     const { activation_token } = req.body;
@@ -88,7 +88,7 @@ const activateUser = catchAsyncErrors(async (req, res, next) => {
   }
 });
 
-// // Login User
+// Login User
 const loginUser = catchAsyncErrors(async (req, res, next) => {
   try {
     const { email, password } = req.body;
@@ -120,7 +120,7 @@ const loginUser = catchAsyncErrors(async (req, res, next) => {
   }
 });
 
-// // Load User
+// Load User
 const loadUser = catchAsyncErrors(async (req, res, next) => {
   try {
     console.log("req.user:", req.user);
@@ -139,7 +139,7 @@ const loadUser = catchAsyncErrors(async (req, res, next) => {
   }
 });
 
-// // Update User Info
+// Update User Info
 const updateUser = catchAsyncErrors(async (req, res, next) => {
   try {
     const { shopName, email, phoneNumber } = req.body;
@@ -164,7 +164,7 @@ const updateUser = catchAsyncErrors(async (req, res, next) => {
   }
 });
 
-// // Update User Adress
+// Update User Adress
 const updateUserAddress = catchAsyncErrors(async (req, res, next) => {
   try {
     const { address, zipcode } = req.body;
@@ -188,7 +188,7 @@ const updateUserAddress = catchAsyncErrors(async (req, res, next) => {
   }
 });
 
-// // Update User Password
+// Update User Password
 const updateUserPassword = catchAsyncErrors(async (req, res, next) => {
   try {
     const { oldPassword, newPassword } = req.body;
@@ -222,7 +222,7 @@ const updateUserPassword = catchAsyncErrors(async (req, res, next) => {
   }
 });
 
-// // Find User with ID
+// Find User with ID
 const findUserId = catchAsyncErrors(async (req, res, next) => {
   try {
     const userId = parseInt(req.params.id);
@@ -239,7 +239,7 @@ const findUserId = catchAsyncErrors(async (req, res, next) => {
   }
 });
 
-// // Find all Users --- For Admin
+// Find all Users --- For Admin
 const findAllUsers = catchAsyncErrors(async (req, res, next) => {
   try {
     const users = await User.find({ orderBy: "desc" });
@@ -256,7 +256,7 @@ const findAllUsers = catchAsyncErrors(async (req, res, next) => {
   }
 });
 
-// // Delete User --- For Admin
+// Delete User --- For Admin
 const deleteUser = catchAsyncErrors(async (req, res, next) => {
   try {
     const userId = parseInt(req.params.id);
