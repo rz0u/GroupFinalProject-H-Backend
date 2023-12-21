@@ -1,4 +1,4 @@
-const { MIDTRANS_URL, MIDTRANS_SECRET_KEY } = require("../../../config/config");
+const { MIDTRANS_URL, MIDTRANS_SECRET_KEY } = require("../../config/config");
 
 const getStatusSnap = async (order_id) => {
   const url = `${MIDTRANS_URL}/v2/${order_id}/status`;

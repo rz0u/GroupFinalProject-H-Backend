@@ -1,31 +1,29 @@
 const express = require("express");
 const dotenv = require("dotenv");
-const path = require("path");
-const userRouter = require("./routes/user");
-const productRouter = require("./routes/product");
-const categoryRouter = require("./routes/category");
-const uploadRouter = require("./routes/upload");
-const Cors = require("cors");
-const eventRouter = require("./routes/event");
+const applyMiddleware = require("./middleware");
+const apiRouter = require("./routes");
+const cron = require("node-cron");
+const { ENABLE_CRON, INTERVAL_INQUIRY } = require("./config/config");
+const { checkOrder } = require("./controller/order");
 
 dotenv.config();
 const app = express();
+
+applyMiddleware(app);
+
 const port = process.env.PORT;
 
-app.use(Cors());
-
-app.use(express.json());
-app.use(express.static(path.join(__dirname, "uploads")));
-
-app.use("/api/v1/user", userRouter);
-app.use("/api/v1/product", productRouter);
-app.use("/api/v1/category", categoryRouter);
-app.use("/api/v1/event", eventRouter);
-app.use("/api/v1/upload", uploadRouter);
+app.use("/api/v1", apiRouter);
 
 app.get("/", (req, res) => {
   res.send("Hello, Test!");
 });
+
+if (ENABLE_CRON == "true") {
+  cron.schedule(INTERVAL_INQUIRY, () => {
+    checkOrder();
+  });
+}
 
 app.listen(port, () => {
   console.log(`Server is running on ${port}`);

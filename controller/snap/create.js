@@ -1,7 +1,7 @@
 const {
   MIDTRANS_URL_POST,
   MIDTRANS_SECRET_KEY,
-} = require("../../../config/config");
+} = require("../../config/config");
 
 const buySnap = async (data) => {
   const url = `${MIDTRANS_URL_POST}/snap/v1/transactions`;

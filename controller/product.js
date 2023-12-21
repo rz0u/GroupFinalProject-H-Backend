@@ -1,8 +1,6 @@
 const ErrorHandler = require("../utils/ErrorHandler");
-const isAuthenticated = require("../middleware/auth");
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const Product = require("../models/Product");
-const User = require("../models/User");
 
 // Create Product // butuh input Array dari frontend untuk gallery
 const createProduct = catchAsyncErrors(async (req, res, next) => {
