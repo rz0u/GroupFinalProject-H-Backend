@@ -16,17 +16,23 @@ const registerUser = async (req, res, next) => {
       return next(new ErrorHandler("User already exists", 400));
     }
 
-    const user = {
+    const token = {
+      email: email,
+      password: password,
+    };
+
+    const activationToken = User.createActivationToken(token);
+
+    const user = await User.register({
       shopName: shopName,
       email: email,
       password: password,
-      avatar: avatar,
       address: address,
       zipcode: zipcode,
       phoneNumber: phoneNumber,
-    };
-
-    const activationToken = User.createActivationToken(user);
+      avatar: avatar,
+      activationToken: activationToken,
+    });
 
     const activationUrl = `${process.env.BASE_URL}/activation/${activationToken}`; //Contoh URL
 
@@ -59,20 +65,22 @@ const activateUser = catchAsyncErrors(async (req, res, next) => {
     }
 
     const existingUser = await User.get({ email: newUser.email });
-    if (existingUser) {
-      return next(new ErrorHandler("User already exists", 400));
+    if (!existingUser) {
+      return next(new ErrorHandler("User didnt exists", 400));
     }
 
-    const user = await User.register({
-      shopName: newUser.shopName,
-      email: newUser.email,
-      password: newUser.password,
-      avatar: newUser.fileUrl,
-      address: newUser.address,
-      zipcode: newUser.zipcode,
-      phoneNumber: newUser.phoneNumber,
-      avatar: newUser.avatar,
-    });
+    if (existingUser.activationToken != activation_token) {
+      return next(new ErrorHandler("Invalid token", 400));
+    }
+
+    const activatedUser = await User.activate(existingUser.id, true);
+
+    const user = {
+      shopName: activatedUser.shopName,
+      email: activatedUser.email,
+      password: activatedUser.password,
+      activationToken: activatedUser.activationToken,
+    };
 
     sendToken(user, 201, res);
   } catch (error) {
