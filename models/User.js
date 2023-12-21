@@ -12,6 +12,7 @@ class User {
     phoneNumber,
     zipcode,
     address,
+    activationToken,
   }) {
     return await prisma.user.create({
       data: {
@@ -22,6 +23,7 @@ class User {
         phoneNumber,
         zipcode,
         address,
+        activationToken,
       },
     });
   }
@@ -59,6 +61,14 @@ class User {
   static createActivationToken(user) {
     return jwt.sign(user, process.env.ACTIVATION_SECRET, {
       expiresIn: "1d", // ganti waktunya ketika mau deploy
+    });
+  }
+  static async activate(id, isActivated) {
+    return await prisma.user.update({
+      where: { id: id },
+      data: {
+        isActivated: isActivated,
+      },
     });
   }
 }
