@@ -78,21 +78,22 @@ const User = require("../models/User");
     }
   }
 
-  // const sellerDelete = async (req, res, next) => {
-  //   try {
-  //     const eventId = parseInt(req.params.id);
-  //     const userId = req.user.id; // Assuming the authenticated user's ID is available in req.user
+  const sellerDelete = async (req, res, next) => {
+    try {
+      const eventId = parseInt(req.params.id);
+      const userId = req.user.id; // Assuming the authenticated user's ID is available in req.user
+      const userRole = req.user.role; // Assuming the authenticated user's role is available in req.user
   
-  //     await Event.delete(eventId, userId);
+      await Event.sellerDelete(eventId, userId, userRole);
   
-  //     res.status(200).json({
-  //       success: true,
-  //       message: "Event deleted successfully",
-  //     });
-  //   } catch (error) {
-  //     return next(new ErrorHandler(error.message, 500));
-  //   }
-  // };
+      res.status(200).json({
+        success: true,
+        message: "Event deleted successfully",
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  };
   
 
 module.exports = {
@@ -101,5 +102,5 @@ module.exports = {
     getAllEvent,
     updateEvent,
     deleteEvent,
-    // sellerDelete,
+    sellerDelete,
 }
