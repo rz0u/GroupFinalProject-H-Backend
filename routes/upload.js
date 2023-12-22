@@ -4,6 +4,6 @@ const { upload } = require("../utils/multer");
 const uploadRouter = Router();
 
 uploadRouter.post("/", upload.single("photo"), handleUpload);
-uploadRouter.get("/:id", showImage);
+// uploadRouter.get("/:id", showImage);
 
 module.exports = uploadRouter;
