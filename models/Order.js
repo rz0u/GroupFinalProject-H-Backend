@@ -12,6 +12,7 @@ class Order {
         snapUrl,
         token,
         billCode,
+        transactionDate: new Date(),
       },
     });
   }
@@ -21,10 +22,10 @@ class Order {
     const twentyFourHoursAgo = new Date();
     twentyFourHoursAgo.setHours(twentyFourHoursAgo.getHours() - 24); //checking last 24 hours transaction with assumsion each transaction have a expire 24 hour from time post transaction
     let filter = {
-      createdAt: {
+      transactionDate: {
         gte: twentyFourHoursAgo, //greater than equals
       },
-      status: {
+      paymentStatus: {
         not: {
           equals: "settlement",
         },
@@ -37,7 +38,7 @@ class Order {
         createdAt: {
           gte: twentyFourHoursAgo,
         },
-        status: {
+        paymentStatus: {
           not: {
             equals: "settlement",
           },
@@ -57,7 +58,7 @@ class Order {
         id: id,
       },
       data: {
-        status: status,
+        paymentStatus: status,
       },
     });
   }
