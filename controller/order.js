@@ -53,7 +53,7 @@ const postOrder = catchAsyncErrors(async (req, res, next) => {
 });
 
 // Check Status by Order ID
-const checkStatusId = catchAsyncErrors(async (order_id) => {
+const checkStatusId = async (order_id) => {
   try {
     const response = await getStatusSnap(order_id);
     const statusCode = parseInt(response.status_code, 10);
@@ -66,10 +66,10 @@ const checkStatusId = catchAsyncErrors(async (order_id) => {
   } catch (error) {
     return [false, error.message];
   }
-});
+};
 
 // Check Order Routine
-const checkOrder = catchAsyncErrors(async (order_id) => {
+const checkOrder = async (order_id) => {
   try {
     let listTransaction;
     if (typeof order_id !== "undefined") {
@@ -88,12 +88,12 @@ const checkOrder = catchAsyncErrors(async (order_id) => {
       }
     }
   } catch (error) {
-    return next(new ErrorHandler(error.message, 500));
+    console.log("error: ", error);
   }
-});
+};
 
 // Notify Transaction
-const notifyTransaction = catchAsyncErrors(async (req, res) => {
+const notifyTransaction = catchAsyncErrors(async (req, res, next) => {
   try {
     const order_id = req.body.order_id || undefined;
 
