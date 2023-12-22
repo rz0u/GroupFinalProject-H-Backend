@@ -19,7 +19,7 @@ const { validator, validateInput } = require("../utils/validation");
 userRouter.post("/register", validator, validateInput, registerUser);
 userRouter.post("/activation", activateUser);
 userRouter.post("/login", loginLimiter, loginUser);
-userRouter.get("/getuser", loadUser);
+userRouter.get("/getuser", isAuthenticated, loadUser);
 userRouter.put("/update-user", isAuthenticated, updateUser);
 userRouter.put("/update-address", isAuthenticated, updateUserAddress);
 userRouter.put("/update-password", isAuthenticated, updateUserPassword);
